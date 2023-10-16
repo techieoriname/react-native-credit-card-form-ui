@@ -28,37 +28,42 @@ const validationSchema = yup.object().shape({
     .string()
     .defined()
     .max(24)
-    .test('is-valid-holder', 'Holder name is invalid', function (
-      holderName: any
-    ) {
-      const { runtime = false } = this.options.context as any;
-      const { isPotentiallyValid, isValid } = cardValidator.cardholderName(
-        holderName
-      );
-      return runtime ? isPotentiallyValid : isValid;
-    }),
+    .test(
+      'is-valid-holder',
+      'Holder name is invalid',
+      function (holderName: any) {
+        const { runtime = false } = this.options.context as any;
+        const { isPotentiallyValid, isValid } =
+          cardValidator.cardholderName(holderName);
+        return runtime ? isPotentiallyValid : isValid;
+      }
+    ),
   number: yup
     .string()
     .defined()
-    .test('is-valid-card-number', 'Card number is invalid', function (
-      cardNumber: any
-    ) {
-      const { runtime = false } = this.options.context as any;
-      const { isPotentiallyValid, isValid } = cardValidator.number(cardNumber);
-      return runtime ? isPotentiallyValid : isValid;
-    }),
+    .test(
+      'is-valid-card-number',
+      'Card number is invalid',
+      function (cardNumber: any) {
+        const { runtime = false } = this.options.context as any;
+        const { isPotentiallyValid, isValid } =
+          cardValidator.number(cardNumber);
+        return runtime ? isPotentiallyValid : isValid;
+      }
+    ),
   expiration: yup
     .string()
     .defined()
-    .test('is-valid-expiration', 'Card expiration is invalid', function (
-      expiration: any
-    ) {
-      const { runtime = false } = this.options.context as any;
-      const { isPotentiallyValid, isValid } = cardValidator.expirationDate(
-        expiration
-      );
-      return runtime ? isPotentiallyValid : isValid;
-    }),
+    .test(
+      'is-valid-expiration',
+      'Card expiration is invalid',
+      function (expiration: any) {
+        const { runtime = false } = this.options.context as any;
+        const { isPotentiallyValid, isValid } =
+          cardValidator.expirationDate(expiration);
+        return runtime ? isPotentiallyValid : isValid;
+      }
+    ),
   cvv: yup
     .string()
     .defined()
@@ -287,14 +292,18 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
         if (name === 'number') {
           loadCardConfig(text);
           if (isValid) {
-            focusField(holderInputRef);
+            focusField([
+              { name: 'holder', ref: holderInputRef },
+              { name: 'expiration', ref: expirationInputRef },
+              { name: 'cvv', ref: cvvInputRef },
+            ]);
           }
         } else if (
           name === 'expiration' &&
           isValid &&
           text.length === expirationMask.length
         ) {
-          focusField(cvvInputRef);
+          focusField([{ name: 'cvv', ref: cvvInputRef }]);
           rotate();
         }
       },
@@ -322,9 +331,15 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
       [activeSide, backOpacityRef, frontOpacityRef, rotationValue]
     );
 
-    const focusField = (field: any) => {
-      if (!field || !field.current) return;
-      field.current.focus();
+    const focusField = (fields: any) => {
+      for (let i = 0; i < fields.length; i += 1) {
+        const field = fields[i];
+        const readOnlyProp = readOnly[field.name];
+        if (!readOnlyProp && field.ref && field.ref.current) {
+          field.ref.current.focus();
+          break;
+        }
+      }
     };
 
     const submit = React.useCallback(() => {
@@ -414,7 +429,13 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
                 refInput={numberInputRef}
                 returnKeyType="next"
                 autoCorrect={false}
-                onSubmitEditing={() => focusField(holderInputRef)}
+                onSubmitEditing={() =>
+                  focusField([
+                    { name: 'holder', ref: holderInputRef },
+                    { name: 'expiration', ref: expirationInputRef },
+                    { name: 'cvv', ref: cvvInputRef },
+                  ])
+                }
                 blurOnSubmit={false}
                 keyboardType="numeric"
               />
@@ -442,7 +463,13 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
                   maxLength={24}
                   value={cardData?.holder}
                   refInput={holderInputRef}
-                  onSubmitEditing={() => focusField(expirationInputRef)}
+                  onSubmitEditing={() =>
+                    focusField([
+                      { name: 'expiration', ref: expirationInputRef },
+                      { name: 'number', ref: numberInputRef },
+                      { name: 'cvv', ref: cvvInputRef },
+                    ])
+                  }
                   blurOnSubmit={false}
                 />
               </View>
@@ -477,7 +504,11 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
                   }}
                   refInput={expirationInputRef}
                   onSubmitEditing={() => {
-                    focusField(cvvInputRef);
+                    focusField([
+                      { name: 'cvv', ref: cvvInputRef },
+                      { name: 'number', ref: numberInputRef },
+                      { name: 'holder', ref: holderInputRef },
+                    ]);
                     rotate();
                   }}
                   blurOnSubmit={false}
