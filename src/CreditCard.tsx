@@ -122,6 +122,13 @@ interface CreditCardProps {
   placeholderTextColor?: string;
   errorTextColor?: string;
   onValidStateChange?: (cardDataIsValid: boolean) => void;
+  cardValues?: {
+    number?: string;
+    holder?: string;
+    expiration?: string;
+    cvv?: string;
+  };
+  disableAutoFocus?: boolean;
 }
 
 export interface SubmitResponse {
@@ -149,11 +156,16 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
       expirationDateFormat,
       onValidStateChange,
       readOnly,
+      cardValues,
+      disableAutoFocus,
     }: any,
     ref
   ) => {
     /** States */
-    const [cardData, setCardData] = React.useState(initialValues);
+    const [cardData, setCardData] = React.useState({
+      ...initialValues,
+      ...cardValues,
+    });
     const [activeSide, setActiveSide] = React.useState(CardSideEnum.FRONT);
     const [cardConfig, setCardConfig] = React.useState(defaultCardConfig);
     const [errors, setErrors] = React.useState({
@@ -288,6 +300,8 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
         setCardData((prev: any) => ({ ...prev, [name]: text }));
         const { isValid } = validateField(name, text);
 
+        if (disableAutoFocus) return; // If disableAutoFocus is true, don't focus on next field
+
         if (name === 'number') {
           loadCardConfig(text);
           if (isValid) {
@@ -306,7 +320,7 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
           rotate();
         }
       },
-      [validateField, rotate, expirationMask]
+      [validateField, rotate, expirationMask, disableAutoFocus]
     );
 
     const getSideStyle = React.useCallback(
