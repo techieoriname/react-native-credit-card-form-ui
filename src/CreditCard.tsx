@@ -269,7 +269,6 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
         const numberMask = maskChars.join('');
 
         const cvvMask = ''.padStart(code.size, '9');
-        console.log(type);
         const brandImage = Images.brands[type]
           ? Images.brands[type]
           : Images.brands.default;
@@ -372,6 +371,8 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
     }, [cardData, onValidStateChange]);
 
     React.useImperativeHandle(ref, () => ({ submit }));
+
+    const styles = s(background);
 
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -583,82 +584,85 @@ CreditCard.defaultProps = {
   onValidStateChange: () => {},
 };
 
-const styles = StyleSheet.create({
-  cardWrapper: {
-    height: '100%',
-    maxHeight: 220,
-    position: 'relative',
-    width: '100%',
-    maxWidth: 350,
-    shadowColor: 'rgba(0,0,0,0.6)',
-    shadowOffset: {
-      width: 0,
-      height: 6,
+const s = (background?: string) => {
+  return StyleSheet.create({
+    cardWrapper: {
+      backgroundColor: background || 'white',
+      height: '100%',
+      maxHeight: 220,
+      position: 'relative',
+      width: '100%',
+      maxWidth: 350,
+      shadowColor: 'rgba(0,0,0,0.6)',
+      shadowOffset: {
+        width: 0,
+        height: 6,
+      },
+      shadowOpacity: 0.37,
+      shadowRadius: 7.49,
+      borderRadius: 6,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
-    shadowOpacity: 0.37,
-    shadowRadius: 7.49,
-    borderRadius: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 
-  background: {
-    resizeMode: 'cover',
-    width: '100%',
-    height: '100%',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  textLabel: {
-    fontSize: 10 / PixelRatio.getFontScale(),
-    textTransform: 'uppercase',
-  },
-  textData: {
-    fontWeight: 'bold',
-    fontSize: 16 / PixelRatio.getFontScale(),
-    marginTop: Platform.OS == 'android' ? -10 : undefined,
-    marginLeft: Platform.OS == 'android' ? -4 : undefined,
-  },
-  textCardNumber: {
-    fontSize: 20 / PixelRatio.getFontScale(),
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: Platform.OS == 'ios' ? 16 : 5,
-    letterSpacing: 2,
-  },
-  imageChip: {
-    marginTop: 16,
-  },
-  footer: {
-    marginTop: Platform.OS == 'ios' ? 16 : 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  strip: {
-    backgroundColor: 'rgba(0,0,0,.6)',
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    marginTop: 48,
-    height: 40,
-  },
-  cvvWrapper: {
-    height: '100%',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    bottom: 24,
-  },
-  holderWrapper: {
-    flex: 2,
-    marginRight: 16,
-  },
-  expirationWrapper: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-});
+    background: {
+      resizeMode: 'cover',
+      width: '100%',
+      height: '100%',
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+    },
+    textLabel: {
+      fontSize: 10 / PixelRatio.getFontScale(),
+      textTransform: 'uppercase',
+    },
+    textData: {
+      fontWeight: 'bold',
+      fontSize: 16 / PixelRatio.getFontScale(),
+      marginTop: Platform.OS === 'android' ? -10 : undefined,
+      marginLeft: Platform.OS === 'android' ? -4 : undefined,
+    },
+    textCardNumber: {
+      fontSize: 20 / PixelRatio.getFontScale(),
+      fontWeight: 'bold',
+      marginBottom: 8,
+      marginTop: Platform.OS === 'ios' ? 16 : 5,
+      letterSpacing: 2,
+    },
+    imageChip: {
+      marginTop: 16,
+    },
+    footer: {
+      marginTop: Platform.OS === 'ios' ? 16 : 5,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    strip: {
+      backgroundColor: 'rgba(0,0,0,.6)',
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      marginTop: 48,
+      height: 40,
+    },
+    cvvWrapper: {
+      height: '100%',
+      alignItems: 'flex-end',
+      justifyContent: 'flex-end',
+      bottom: 24,
+    },
+    holderWrapper: {
+      flex: 2,
+      marginRight: 16,
+    },
+    expirationWrapper: {
+      flex: 1,
+      alignItems: 'flex-end',
+    },
+  });
+};
 
 export default CreditCard;
