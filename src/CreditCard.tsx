@@ -192,6 +192,10 @@ const CreditCard = React.forwardRef<CreditCardType, CreditCardProps>(
     /** Runtime Styles */
     const textStyle = { color: textColor };
 
+    React.useEffect(() => {
+      setCardData((prev: any) => ({ ...prev, ...cardValues }));
+    }, [cardValues]);
+
     /** Animate Card (Rotate) */
     const rotate = React.useCallback(() => {
       const fadeAnimationConfig = (appearing: boolean) => ({
